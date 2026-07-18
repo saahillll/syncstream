@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsup",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit"
   },
@@ -11,10 +11,12 @@
     "@syncstream/types": "workspace:*",
     "ioredis": "^5.4.0",
     "jsonwebtoken": "^9.0.2",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
+    "tsup": "^8.3.0",
     "tsx": "^4.19.0"
   }
 }

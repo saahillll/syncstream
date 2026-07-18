@@ -17,6 +17,7 @@ Cross platform watch party app (chat + synchronized YouTube + Google Drive playb
 * No OTT (Netflix etc.) integrations of any kind. No DRM circumvention.
 * Sync authority lives server side in the gateway: anchor state { itemId, playing, anchorPositionMs, anchorServerTime, epoch }. Clients predict locally and correct via ladder: drift <100ms ignore, 100-500ms playbackRate nudge (1.02/0.98), >500ms hard seek. Commands carry epoch; stale epochs are discarded.
 * Playback role checks happen in the gateway on every command, never trust client role state.
+* After completing each task, provide stesps for commit with a descriptive message
 
 ## Conventions
 * TypeScript strict everywhere. Shared request/response shapes go in packages/types as zod schemas first, then infer types.

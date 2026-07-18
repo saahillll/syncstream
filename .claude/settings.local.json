@@ -19,7 +19,14 @@
       "Bash(powershell -NoProfile -Command \"Stop-Process -Id 23492 -Force\")",
       "Bash(node room_switch_smoke.mjs 6M99D4 4LX5FX)",
       "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4098 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
-      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 16380 -Force\")"
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 16380 -Force\")",
+      "Bash(pnpm --filter @syncstream/sync-gateway build)",
+      "Bash(node -e \"console.log\\(require\\('./services/sync-gateway/node_modules/zod/package.json'\\).version\\)\")",
+      "Bash(cat /tmp/gateway_bundle.log)",
+      "Read(//tmp/**)",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4097 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 22356 -Force\")",
+      "Bash(echo \"typecheck EXIT:$?\")"
     ]
   }
 }
