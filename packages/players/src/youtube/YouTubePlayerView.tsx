@@ -34,6 +34,7 @@ export function YouTubePlayerView({ adapter, height }: YouTubePlayerViewProps) {
       videoId={state.videoId}
       onReady={() => adapter.handleReady()}
       onChangeState={(iframeState: string) => adapter.handleStateChange(iframeState)}
+      onError={(error: string) => adapter.handleError(error)}
     />
   );
 }

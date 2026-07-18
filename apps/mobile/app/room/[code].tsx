@@ -53,7 +53,9 @@ export default function Room() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [playback, setPlayback] = useState<PlaybackState | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [playerError, setPlayerError] = useState<string | null>(null);
   const [driftMs, setDriftMs] = useState<number | null>(null);
+  const [backoffActive, setBackoffActive] = useState(false);
   const [positionMs, setPositionMs] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const [seekBarWidth, setSeekBarWidth] = useState(0);
@@ -75,7 +77,11 @@ export default function Room() {
 
   useEffect(() => {
     adapter.on("ready", () => {
+      setPlayerError(null);
       adapter.getDurationMs().then(setDurationMs);
+    });
+    adapter.on("error", () => {
+      setPlayerError("This video can't be played in embedded players; host should pick another video.");
     });
   }, [adapter]);
 
@@ -92,7 +98,9 @@ export default function Room() {
     socket.on("room:snapshot", (snapshot: RoomSnapshot) => {
       setParticipants(snapshot.participants);
       setPlayback(snapshot.playback);
-      void engine.applyState(snapshot.playback, Date.now());
+      // Errors surface via the adapter's "error" event listener above;
+      // caught here only to avoid an unhandled rejection.
+      engine.applyState(snapshot.playback, Date.now()).catch(() => {});
     });
 
     socket.on("presence:update", (payload: { participants: Participant[] }) => {
@@ -101,7 +109,7 @@ export default function Room() {
 
     socket.on("playback:state", (state: PlaybackState) => {
       setPlayback(state);
-      void engine.applyState(state, Date.now());
+      engine.applyState(state, Date.now()).catch(() => {});
     });
 
     socket.on("room:error", (payload: { message: string }) => {
@@ -123,6 +131,7 @@ export default function Room() {
     const tickInterval = setInterval(async () => {
       const decision = await engine.tick(Date.now());
       if (decision) setDriftMs(decision.driftMs);
+      setBackoffActive(engine.isBackoffActive());
 
       const latest = engine.getLatestState();
       if (latest) {
@@ -164,6 +173,7 @@ export default function Room() {
       </View>
 
       {connectionError && <Text style={styles.error}>{connectionError}</Text>}
+      {playerError && <Text style={styles.error}>{playerError}</Text>}
 
       <YouTubePlayerView adapter={adapter} height={220} />
 
@@ -171,7 +181,11 @@ export default function Room() {
         <Text style={styles.statusText}>
           {formatClock(positionMs)} {durationMs > 0 ? `/ ${formatClock(durationMs)}` : ""}
         </Text>
-        <Text style={styles.driftText}>drift: {driftMs === null ? "-" : `${Math.round(driftMs)}ms`}</Text>
+        <Text style={styles.driftText}>
+          {backoffActive
+            ? "drift: corrections paused (struggling to keep up)"
+            : `drift: ${driftMs === null ? "-" : `${Math.round(driftMs)}ms`}`}
+        </Text>
       </View>
 
       {isHost ? (

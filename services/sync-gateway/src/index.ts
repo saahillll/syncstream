@@ -110,6 +110,16 @@ roomNamespace.on("connection", (socket) => {
     }
 
     const { code, name } = parsed.data;
+
+    if (joinedCode && joinedCode !== code) {
+      const previousRoom = rooms.leave(joinedCode, socket.id);
+      socket.leave(joinedCode);
+      if (previousRoom) {
+        roomNamespace.to(joinedCode).emit("presence:update", { participants: toParticipantList(previousRoom) });
+      }
+      joinedCode = null;
+    }
+
     const participant = rooms.join(code, socket.id, name);
     if (!participant) {
       socket.emit("room:error", { message: `Room ${code} not found.` });

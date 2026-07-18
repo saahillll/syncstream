@@ -16,7 +16,10 @@
       "Bash(pkill -f \"tsx src/index.ts\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 2 http://localhost:4099/health)",
       "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4099 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
-      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 23492 -Force\")"
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 23492 -Force\")",
+      "Bash(node room_switch_smoke.mjs 6M99D4 4LX5FX)",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4098 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 16380 -Force\")"
     ]
   }
 }

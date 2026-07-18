@@ -5,6 +5,9 @@ import type { MediaSource } from "@syncstream/types";
 // test manually fire adapter events (e.g. "ad") to exercise engine reactions.
 export class MockPlayerAdapter implements PlayerAdapter {
   readonly source: MediaSource = "youtube";
+  // Mutable (unlike the real adapters) so tests can exercise both the fine
+  // and discrete rate-control paths through the drift ladder.
+  supportsFineRateControl = true;
   positionMs = 0;
   playbackRate = 1;
   calls: { method: string; args: unknown[] }[] = [];
