@@ -7,11 +7,11 @@
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "ios": {
-      "bundleIdentifier": "com.CHANGE_ME.syncstream",
+      "bundleIdentifier": "com.saahil.syncstream",
       "usesAppleSignIn": true
     },
     "android": {
-      "package": "com.CHANGE_ME.syncstream"
+      "package": "com.saahil.syncstream"
     },
     "plugins": ["expo-router"]
   }

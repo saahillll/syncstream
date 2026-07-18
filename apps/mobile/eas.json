@@ -4,7 +4,8 @@
     "development": { "developmentClient": true, "distribution": "internal" },
     "preview": {
       "distribution": "internal",
-      "android": { "buildType": "apk" }
+      "android": { "buildType": "apk" },
+      "env": { "EXPO_PUBLIC_GATEWAY_URL": "https://syncstream-2ui8.onrender.com" }
     },
     "production": { "autoIncrement": true }
   },

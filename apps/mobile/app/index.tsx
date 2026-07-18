@@ -79,6 +79,11 @@ export default function Home() {
         >
           {creating ? <ActivityIndicator color={COLORS.bg} /> : <Text style={styles.buttonText}>Create room</Text>}
         </TouchableOpacity>
+        {creating && (
+          <Text style={styles.connectingHint}>
+            Connecting to server... the first request can take up to a minute while it wakes up.
+          </Text>
+        )}
       </View>
 
       <View style={styles.card}>
@@ -102,7 +107,14 @@ export default function Home() {
         </TouchableOpacity>
       </View>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && (
+        <View>
+          <Text style={styles.error}>{error}</Text>
+          <TouchableOpacity onPress={handleCreate} style={styles.retryButton}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -181,5 +193,20 @@ const styles = StyleSheet.create({
   error: {
     color: COLORS.danger,
     marginTop: 8,
+  },
+  connectingHint: {
+    color: COLORS.textDim,
+    fontSize: 12,
+    marginTop: 10,
+    textAlign: "center",
+  },
+  retryButton: {
+    marginTop: 10,
+    alignSelf: "flex-start",
+  },
+  retryButtonText: {
+    color: COLORS.accent,
+    fontWeight: "700",
+    fontSize: 14,
   },
 });

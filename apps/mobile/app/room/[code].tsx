@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   BackHandler,
   LayoutChangeEvent,
   StyleSheet,
@@ -54,6 +55,11 @@ export default function Room() {
   const [playback, setPlayback] = useState<PlaybackState | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [playerError, setPlayerError] = useState<string | null>(null);
+  // True until the initial room:snapshot (or a definitive room:error)
+  // arrives. The Render free instance sleeps when idle, so the first
+  // connection here can take 30-60s while it wakes up.
+  const [connecting, setConnecting] = useState(true);
+  const [socketConnectError, setSocketConnectError] = useState<string | null>(null);
   const [driftMs, setDriftMs] = useState<number | null>(null);
   const [backoffActive, setBackoffActive] = useState(false);
   const [positionMs, setPositionMs] = useState(0);
@@ -90,12 +96,18 @@ export default function Room() {
     socketRef.current = socket;
 
     socket.on("connect", () => {
+      setSocketConnectError(null);
       setSelfId(socket.id ?? null);
       socket.emit("room:join", { code, name });
       void sampleClockBurst(socket, clock);
     });
 
+    socket.on("connect_error", () => {
+      setSocketConnectError("Having trouble reaching the server - it may be waking up from sleep.");
+    });
+
     socket.on("room:snapshot", (snapshot: RoomSnapshot) => {
+      setConnecting(false);
       setParticipants(snapshot.participants);
       setPlayback(snapshot.playback);
       // Errors surface via the adapter's "error" event listener above;
@@ -113,6 +125,7 @@ export default function Room() {
     });
 
     socket.on("room:error", (payload: { message: string }) => {
+      setConnecting(false);
       setConnectionError(payload.message);
     });
 
@@ -161,7 +174,37 @@ export default function Room() {
     sendCommand("seek", Math.round(fraction * durationMs));
   }
 
+  function retryConnection() {
+    setSocketConnectError(null);
+    socketRef.current?.connect();
+  }
+
   const progressPct = durationMs > 0 ? Math.min(100, (positionMs / durationMs) * 100) : 0;
+
+  if (connecting) {
+    return (
+      <View style={styles.screen}>
+        <View style={styles.header}>
+          <Text style={styles.code}>Room {code}</Text>
+          <TouchableOpacity onPress={leaveRoom}>
+            <Text style={styles.leave}>Leave</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.connectingContainer}>
+          <ActivityIndicator color={COLORS.accent} size="large" />
+          <Text style={styles.connectingText}>{socketConnectError ?? "Connecting to the room..."}</Text>
+          <Text style={styles.connectingHint}>
+            The server can take up to a minute to wake up on its first request.
+          </Text>
+          {socketConnectError && (
+            <TouchableOpacity style={styles.retryButton} onPress={retryConnection}>
+              <Text style={styles.retryButtonText}>Retry now</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screen}>
@@ -241,6 +284,35 @@ const styles = StyleSheet.create({
   error: {
     color: COLORS.danger,
     marginBottom: 12,
+  },
+  connectingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingBottom: 96,
+    gap: 12,
+  },
+  connectingText: {
+    color: COLORS.text,
+    fontSize: 15,
+    textAlign: "center",
+  },
+  connectingHint: {
+    color: COLORS.textDim,
+    fontSize: 12,
+    textAlign: "center",
+  },
+  retryButton: {
+    marginTop: 8,
+    backgroundColor: COLORS.accent,
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  retryButtonText: {
+    color: COLORS.bg,
+    fontWeight: "700",
   },
   statusRow: {
     flexDirection: "row",

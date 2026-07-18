@@ -55,6 +55,7 @@ async function handleCreateRoom(req: IncomingMessage, res: ServerResponse) {
   }
 
   const room = rooms.createRoom(videoId);
+  console.log(`room:create code=${room.code} videoId=${videoId}`);
   res.writeHead(201, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ code: room.code }));
 }
@@ -101,6 +102,7 @@ roomNamespace.on("connection", (socket) => {
   socket.emit("gateway:hello", { serverTime: Date.now() });
 
   let joinedCode: string | null = null;
+  let joinedName: string | null = null;
 
   socket.on("room:join", (payload) => {
     const parsed = RoomJoin.safeParse(payload);
@@ -114,10 +116,12 @@ roomNamespace.on("connection", (socket) => {
     if (joinedCode && joinedCode !== code) {
       const previousRoom = rooms.leave(joinedCode, socket.id);
       socket.leave(joinedCode);
+      console.log(`room:leave code=${joinedCode} name=${joinedName}`);
       if (previousRoom) {
         roomNamespace.to(joinedCode).emit("presence:update", { participants: toParticipantList(previousRoom) });
       }
       joinedCode = null;
+      joinedName = null;
     }
 
     const participant = rooms.join(code, socket.id, name);
@@ -127,7 +131,9 @@ roomNamespace.on("connection", (socket) => {
     }
 
     joinedCode = code;
+    joinedName = name;
     socket.join(code);
+    console.log(`room:join code=${code} name=${name}`);
 
     const room = rooms.getRoom(code)!;
     socket.emit("room:snapshot", snapshotFor(code));
@@ -162,10 +168,17 @@ roomNamespace.on("connection", (socket) => {
   socket.on("disconnect", () => {
     if (!joinedCode) return;
     const room = rooms.leave(joinedCode, socket.id);
+    console.log(`room:leave code=${joinedCode} name=${joinedName}`);
     if (room) {
       roomNamespace.to(joinedCode).emit("presence:update", { participants: toParticipantList(room) });
     }
   });
 });
 
-httpServer.listen(process.env.PORT ?? process.env.GATEWAY_PORT ?? 4003);
+// Render's port detection requires binding a non-loopback interface;
+// binding only "localhost" (the default when host is omitted) is invisible
+// to it and readiness checks time out.
+const port = Number(process.env.PORT ?? process.env.GATEWAY_PORT ?? 4003);
+httpServer.listen(port, "0.0.0.0", () => {
+  console.log(`sync-gateway listening on 0.0.0.0:${port}`);
+});
