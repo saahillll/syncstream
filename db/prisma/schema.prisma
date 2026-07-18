@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthProvider {
+  email
+  google
+  apple
+}
+
+enum RoomVisibility {
+  public
+  private
+}
+
+enum RoomStatus {
+  active
+  ended
+}
+
+enum RoomRole {
+  host
+  cohost
+  participant
+}
+
+enum MediaSource {
+  youtube
+  gdrive
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String?      @unique
+  displayName     String
+  avatarUrl       String?
+  authProvider    AuthProvider
+  providerSubject String?
+  passwordHash    String?
+  emailVerifiedAt DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+  ownedRooms      Room[]       @relation("RoomOwner")
+  memberships     RoomMember[]
+  refreshTokens   RefreshToken[]
+
+  @@unique([authProvider, providerSubject])
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  tokenHash  String
+  deviceInfo Json?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+
+  @@index([userId, expiresAt])
+}
+
+model Room {
+  id              String         @id @default(uuid())
+  slug            String         @unique @db.VarChar(12)
+  owner           User           @relation("RoomOwner", fields: [ownerId], references: [id])
+  ownerId         String
+  title           String
+  visibility      RoomVisibility @default(private)
+  passwordHash    String?
+  maxParticipants Int            @default(50)
+  settings        Json           @default("{}")
+  status          RoomStatus     @default(active)
+  createdAt       DateTime       @default(now())
+  endedAt         DateTime?
+  members         RoomMember[]
+  queueItems      QueueItem[]
+  chatMessages    ChatMessage[]
+
+  @@index([visibility, status])
+}
+
+model RoomMember {
+  id       String    @id @default(uuid())
+  room     Room      @relation(fields: [roomId], references: [id])
+  roomId   String
+  user     User?     @relation(fields: [userId], references: [id])
+  userId   String?
+  guestId  String?
+  role     RoomRole  @default(participant)
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+
+  @@index([roomId, role])
+}
+
+model QueueItem {
+  id              String      @id @default(uuid())
+  room            Room        @relation(fields: [roomId], references: [id])
+  roomId          String
+  source          MediaSource
+  sourceRef       String
+  title           String
+  durationSeconds Int?
+  thumbnailUrl    String?
+  addedById       String?
+  position        Int
+  playedAt        DateTime?
+
+  @@unique([roomId, position])
+}
+
+model ChatMessage {
+  id        String    @id @default(uuid())
+  room      Room      @relation(fields: [roomId], references: [id])
+  roomId    String
+  senderId  String?
+  guestId   String?
+  body      String
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([roomId, createdAt])
+}

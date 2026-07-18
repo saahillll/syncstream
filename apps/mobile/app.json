@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "SyncStream",
+    "slug": "syncstream",
+    "scheme": "syncstream",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "bundleIdentifier": "com.CHANGE_ME.syncstream",
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "package": "com.CHANGE_ME.syncstream"
+    },
+    "plugins": ["expo-router"]
+  }
+}

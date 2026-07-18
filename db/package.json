@@ -1,0 +1,12 @@
+{
+  "name": "@syncstream/db",
+  "private": true,
+  "scripts": {
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "generate": "prisma generate",
+    "studio": "prisma studio"
+  },
+  "dependencies": { "@prisma/client": "^5.19.0" },
+  "devDependencies": { "prisma": "^5.19.0" }
+}

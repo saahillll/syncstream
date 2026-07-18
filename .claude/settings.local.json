@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(npx vitest *)",
+      "Bash(pnpm install *)",
+      "Bash(find /c/Users/dell3/Downloads/syncstream-scaffold -maxdepth 6 -ipath \"*react-native-youtube-iframe*\" 2>/dev/null | grep -v \"/src/\" | head -20)",
+      "Read(//c/Users/dell3/Downloads/syncstream-scaffold/**)",
+      "Bash(npx turbo *)",
+      "Bash(curl -s -X POST http://localhost:4099/rooms -H \"Content-Type: application/json\" -d '{\"hostName\":\"Sahil\",\"videoUrl\":\"https://example.com/not-youtube\"}')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X OPTIONS http://localhost:4099/rooms)",
+      "Bash(node \"C:\\\\Users\\\\dell3\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-dell3-Downloads-syncstream-scaffold-syncstream\\\\03c77f8f-e345-49c2-adc0-59c4ab22b7f3\\\\scratchpad\\\\socket_smoke.mjs\" HPDX3M)",
+      "Bash(cp \"C:\\\\Users\\\\dell3\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-dell3-Downloads-syncstream-scaffold-syncstream\\\\03c77f8f-e345-49c2-adc0-59c4ab22b7f3\\\\scratchpad\\\\socket_smoke.mjs\" /c/Users/dell3/Downloads/syncstream-scaffold/syncstream/apps/mobile/socket_smoke.mjs)",
+      "Bash(node socket_smoke.mjs HPDX3M)",
+      "Bash(pkill -f \"tsx src/index.ts\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 2 http://localhost:4099/health)",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4099 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 23492 -Force\")"
+    ]
+  }
+}

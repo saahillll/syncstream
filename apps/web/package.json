@@ -1,0 +1,20 @@
+{
+  "name": "@syncstream/web",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@syncstream/core": "workspace:*",
+    "@syncstream/players": "workspace:*",
+    "@syncstream/types": "workspace:*",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": { "@types/react": "^18.3.0", "typescript": "^5.5.0" }
+}
