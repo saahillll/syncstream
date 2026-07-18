@@ -26,7 +26,10 @@
       "Read(//tmp/**)",
       "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4097 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
       "Bash(powershell -NoProfile -Command \"Stop-Process -Id 22356 -Force\")",
-      "Bash(echo \"typecheck EXIT:$?\")"
+      "Bash(echo \"typecheck EXIT:$?\")",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4096 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 4095 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 25552 -Force\")"
     ]
   }
 }
